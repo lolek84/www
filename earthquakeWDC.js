@@ -33,7 +33,11 @@
     $.getJSON("https://312b4fa12a93.ngrok.io", function(resp) {
         var feat = resp.features,
             tableData = [];
-        console.log(feat);
+        
+        $.each( resp, function( key, val ) {
+            console.log(key+" "+val+|");
+        });
+
         // Iterate over the JSON object
         for (var i = 0, len = feat.length; i < len; i++) {
             tableData.push({
