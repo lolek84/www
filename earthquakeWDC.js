@@ -21,8 +21,8 @@
     }];
 
     var tableSchema = {
-        id: "earthquakeFeed",
-        alias: "Earthquakes with magnitude greater than 4.5 in the last seven days",
+        id: "ATV_TEST_CONNECTOR",
+        alias: "ATV_TEST_CONNECTOR",
         columns: cols
     };
 
