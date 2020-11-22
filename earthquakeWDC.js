@@ -31,19 +31,14 @@
 
     myConnector.getData = function(table, doneCallback) {
     $.getJSON("https://312b4fa12a93.ngrok.io", function(resp) {
-        var feat = resp.features,
-            tableData = [];
-        
-        $.each( resp, function( key, val ) {
-            console.log(key+" "+val+|");
-        });
+        var tableData = [];
 
         // Iterate over the JSON object
-        for (var i = 0, len = feat.length; i < len; i++) {
+        for (var i = 0, len = resp.length; i < len; i++) {
             tableData.push({
-                "id": feat[i].id,
-                "first_name": feat[i].first_name,
-                "last_name": feat[i].last_name
+                "id": resp[i].id,
+                "first_name": resp[i].first_name,
+                "last_name": resp[i].last_name
             });
         }
 
