@@ -18,7 +18,6 @@
         id: "last_name",
         alias: "Last name",
         dataType: tableau.dataTypeEnum.string
-    }
     }];
 
     var tableSchema = {
