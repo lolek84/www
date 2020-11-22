@@ -11,16 +11,14 @@
         id: "id",
         dataType: tableau.dataTypeEnum.string
     }, {
-        id: "mag",
-        alias: "magnitude",
-        dataType: tableau.dataTypeEnum.float
-    }, {
-        id: "title",
-        alias: "title",
+        id: "first_name",
+        alias: "First name",
         dataType: tableau.dataTypeEnum.string
     }, {
-        id: "location",
-        dataType: tableau.dataTypeEnum.geometry
+        id: "last_name",
+        alias: "Last name",
+        dataType: tableau.dataTypeEnum.string
+    }
     }];
 
     var tableSchema = {
@@ -33,7 +31,7 @@
     };
 
     myConnector.getData = function(table, doneCallback) {
-    $.getJSON("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/4.5_week.geojson", function(resp) {
+    $.getJSON("https://202c70b7f2ea.ngrok.io/", function(resp) {
         var feat = resp.features,
             tableData = [];
 
@@ -41,9 +39,8 @@
         for (var i = 0, len = feat.length; i < len; i++) {
             tableData.push({
                 "id": feat[i].id,
-                "mag": feat[i].properties.mag,
-                "title": feat[i].properties.title,
-                "location": feat[i].geometry
+                "first_name": feat[i].first_name,
+                "last_name": feat[i].last_name
             });
         }
 
