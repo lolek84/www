@@ -30,7 +30,7 @@
     };
 
     myConnector.getData = function(table, doneCallback) {
-    $.getJSON("https://202c70b7f2ea.ngrok.io/", function(resp) {
+    $.getJSON("https://10a03a94b948.ngrok.io", function(resp) {
         var feat = resp.features,
             tableData = [];
 
