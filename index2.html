@@ -148,15 +148,15 @@
 			  adBreaksWithWrongTime = [];
 
 			  for(var i=0; i<adBreakArray.length;i++){
-			    emissionTime = adBreakArray[i].getAttribute("timeOffset");
-			    var emisionTime = new Date(emissionTime);
+			    var emissionTimeFromPlaylist = adBreakArray[i].getAttribute("timeOffset");
+			    var emisionTime = new Date(emissionTimeFromPlaylist);
 			    var now = new Date();
 
-			    if (emisionTime < now){
+			    if (emisionTime <= now){
 			      adBreak = new Object();
 			      breakId = adBreakArray[i].getAttribute("breakId");
 			      adBreak.breakId = breakId;
-			      adBreak.emisionTime = emisionTime;
+			      adBreak.emisionTime = emissionTimeFromPlaylist;
 			      adBreaksWithWrongTime.push(adBreak);
 			      status = 'NOK';
 			    }
