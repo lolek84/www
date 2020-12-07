@@ -12,255 +12,247 @@
     <script src="testConnector.js" type="text/javascript"></script>
     <script type="text/javascript">
 			var initialParams = {
-			    urls: [
-			      {url:"https://ad_pod_tst.services.tvn.pl/api/playlist/prefetch?mode=1h_mirrored&ch=TTV"},
-			      {url:"https://ad_pod_tst.services.tvn.pl/api/playlist/prefetch?mode=1h_mirrored&ch=TVN"},
-			      {url:"https://ad_pod_tst.services.tvn.pl/api/playlist/prefetch?mode=1h_mirrored&ch=TVN7"}
-			    ],
-			    responseResponseTimeLimit: 5000,
-			    logURL: "https://tvn.hit.gemius.pl/redot.gif?id=ba.r2wMT5DnsyeXUEYxmE5eAjy0gD2cFA_VQW_zoO2T.M7/stparam=vboijjduaj/fastid=lalalwncvuxlacinkxdgcyvoztmd/nc=0/sarg=ti%3D%27PL%27%26ei%3D%27automatic_test_report%27%26ev%3D%271_0_0%27%26ed%3D"
-			};
+    urls: [
+      {url:"https://ad_pod_tst.services.tvn.pl/api/playlist/prefetch?mode=1h_mirrored&ch=TTV"},
+      {url:"https://ad_pod_tst.services.tvn.pl/api/playlist/prefetch?mode=1h_mirrored&ch=TVN"},
+      {url:"https://ad_pod_tst.services.tvn.pl/api/playlist/prefetch?mode=1h_mirrored&ch=TVN7"}
+    ],
+    responseTimeLimit: 5000,
+    logURL: "https://tvn.hit.gemius.pl/redot.gif?id=ba.r2wMT5DnsyeXUEYxmE5eAjy0gD2cFA_VQW_zoO2T.M7/stparam=vboijjduaj/fastid=lalalwncvuxlacinkxdgcyvoztmd/nc=0/sarg=ti%3D%27PL%27%26ei%3D%27automatic_test_report%27%26ev%3D%271_0_0%27%26ed%3D"
+};
 
-			function sleep(ms) {
-			  return new Promise(resolve => setTimeout(resolve, ms));
-			}
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
-			async function demo() {
-			  var urls = initialParams.urls;
-			  delete initialParams.urls;
+async function demo() {
+  var urls = initialParams.urls;
+  delete initialParams.urls;
 
-			  for(var i=0;i<urls.length;i++){
-			    initialParams.url = urls[i].url;
-			    doTest(initialParams);
-			    await sleep(2000);
-			  } 
-			}
+  for(var i=0;i<urls.length;i++){
+    initialParams.url = urls[i].url;
+    doTest(initialParams);
+    await sleep(2000);
+  } 
+}
 
-			demo();
+demo();
 
-			function doTest(initialParams){
-			  T1Result = T1_checkSystemAvailability(initialParams);
-			  results = [T1Result];
+function doTest(initialParams){
+  T1Result = T1_checkSystemAvailability(initialParams);
+  results = [T1Result];
   
-			  params = new Object();
-			  params.initialParams = initialParams;
-			  params.serviceResponse = T1Result.others.response;
+  params = new Object();
+  params.initialParams = initialParams;
+  params.serviceResponse = T1Result.others.response;
 
-			  if(T1Result.status == 'OK'){
-			      results.push(T2_checkIfAdPlaylistIsEmpty(params));
-			      results.push(T3_checkMezzanineFilesAvailability(params));
-			      results.push(T4_checkIfTimeOfAdBreaksIsInTheFuture(params));
-			  }
+  if(T1Result.status == 'OK'){
+      results.push(T2_checkIfAdPlaylistIsEmpty(params));
+      results.push(T3_checkMezzanineFilesAvailability(params));
+      results.push(T4_checkIfTimeOfAdBreaksIsInTheFuture(params));
+  }
   
-			  report = createReport(initialParams,results);
-			  sendReport(initialParams,report);
-			}
+  report = createReport(initialParams,results);
+  sendReport(initialParams,report);
+}
 
-			function T1_checkSystemAvailability(params){
-			  result = getURL(params['url']);
+function T1_checkSystemAvailability(params){
+  result = getURL(params['url']);
 
-			  status = 'OK';
-			  if(result[0]!=200 || result[1]>=params['responseTimeLimit']){
-			    status = 'NOK';
-			  }
+  status = 'OK';
+  if(result[0]!=200 || result[1]>=params['responseTimeLimit']){
+    status = 'NOK';
+  }
 
-			  testCaseResult = new Object()
-			  testCaseResult.id = 'T1_checkSystemAvailability';
-			  testCaseResult.status = status;
+  testCaseResult = new Object()
+  testCaseResult.id = 'T1_checkSystemAvailability';
+  testCaseResult.status = status;
 
-			  additionalParams = new Object();
-			  additionalParams.httpStatus = result[0];
-			  additionalParams.responseTime = result[1];
-			  testCaseResult.additionalParams = additionalParams;
+  additionalParams = new Object();
+  additionalParams.httpStatus = result[0];
+  additionalParams.responseTime = result[1];
+  testCaseResult.additionalParams = additionalParams;
 
-			  others = new Object();
-			  others.response = result[2];
-			  testCaseResult.others = others;
+  others = new Object();
+  others.response = result[2];
+  testCaseResult.others = others;
   
-			  return testCaseResult;
-			}
+  return testCaseResult;
+}
 
-			function T2_checkIfAdPlaylistIsEmpty(params){
-			  adBreaks = params.serviceResponse.getElementsByTagName("vmap:AdBreak");
-			  adBreakArray = Array.prototype.slice.call( adBreaks )
+function T2_checkIfAdPlaylistIsEmpty(params){
+  adBreaks = params.serviceResponse.getElementsByTagName("vmap:AdBreak");
+  adBreakArray = Array.prototype.slice.call( adBreaks )
 
-			  status='OK';
-			  if(adBreakArray.length == 0)
-			    status = 'NOK';
+  status='OK';
+  if(adBreakArray.length == 0)
+    status = 'NOK';
 
-			  adBreaks = [];
-			  for(var i=0; i<adBreakArray.length;i++){
-			    adBreak = new Object();
-			    adBreak.id = adBreakArray[i].getAttribute("breakId");
-			    adBreak.emissionTime = adBreakArray[i].getAttribute("timeOffset");
-			    adBreaks.push(adBreak);
-			  }
+  adBreaks = [];
+  for(var i=0; i<adBreakArray.length;i++){
+    adBreak = new Object();
+    adBreak.id = adBreakArray[i].getAttribute("breakId");
+    adBreak.emissionTime = adBreakArray[i].getAttribute("timeOffset");
+    adBreaks.push(adBreak);
+  }
 
-			  testCaseResult = new Object()
-			  testCaseResult.id = 'T2_checkIfAdPlaylistIsEmpty';
-			  testCaseResult.status = status;
+  testCaseResult = new Object()
+  testCaseResult.id = 'T2_checkIfAdPlaylistIsEmpty';
+  testCaseResult.status = status;
 
-			  additionalParams = new Object();
-			  additionalParams.adBreaks = adBreaks;
-			  testCaseResult.additionalParams = additionalParams;
+  additionalParams = new Object();
+  additionalParams.adBreaks = adBreaks;
+  testCaseResult.additionalParams = additionalParams;
 
-			  return testCaseResult;
-			}
+  return testCaseResult;
+}
 
-			function T3_checkMezzanineFilesAvailability(params){
-			  mezzanines = params.serviceResponse.getElementsByTagName("Mezzanine");
-			  mezzanineArray = Array.prototype.slice.call( mezzanines )
+function T3_checkMezzanineFilesAvailability(params){
+  mezzanines = params.serviceResponse.getElementsByTagName("Mezzanine");
+  mezzanineArray = Array.prototype.slice.call( mezzanines )
 
-			  status = 'OK';
-			  missingFiles = [];
+  status = 'OK';
+  missingFiles = [];
 
-			  for(var i=0; i<mezzanineArray.length;i++){
-			    url = mezzanineArray[i].innerHTML;
-			    url = url.replace("<![CDATA[","");
-			    url = url.replace("]]>","");
-			    if(!checkURL(url)){
-			      status = 'NOK';
-			      missingFile = new Object();
-			      missingFile.url = url;
-			      missingFiles.push(missingFile);
-			    }
-			  }
+  for(var i=0; i<mezzanineArray.length;i++){
+    url = mezzanineArray[i].innerHTML;
+    url = url.replace("<![CDATA[","");
+    url = url.replace("]]>","");
+    if(!checkURL(url)){
+      status = 'NOK';
+      missingFile = new Object();
+      missingFile.url = url;
+      missingFiles.push(missingFile);
+    }
+  }
 
-			  testCaseResult = new Object()
-			  testCaseResult.id = 'T3_checkMezzanineFilesAvailability';
-			  testCaseResult.status = status;
+  testCaseResult = new Object()
+  testCaseResult.id = 'T3_checkMezzanineFilesAvailability';
+  testCaseResult.status = status;
 
-			  if(status == 'NOK'){
-			    additionalParams = new Object();
-			    additionalParams.missingFiles = missingFiles;
-			    testCaseResult.additionalParams = additionalParams;
-			  }
+  if(status == 'NOK'){
+    additionalParams = new Object();
+    additionalParams.missingFiles = missingFiles;
+    testCaseResult.additionalParams = additionalParams;
+  }
 
-			  return testCaseResult;
-			}
+  return testCaseResult;
+}
 
-			function T4_checkIfTimeOfAdBreaksIsInTheFuture(params){
-			  adBreaks = params.serviceResponse.getElementsByTagName("vmap:AdBreak");
-			  adBreakArray = Array.prototype.slice.call( adBreaks )
+function T4_checkIfTimeOfAdBreaksIsInTheFuture(params){
+  adBreaks = params.serviceResponse.getElementsByTagName("vmap:AdBreak");
+  adBreakArray = Array.prototype.slice.call( adBreaks )
 
-			  status='OK';
+  status='OK';
 
-			  adBreaksWithWrongTime = [];
+  adBreaksWithWrongTime = [];
 
-			  for(var i=0; i<adBreakArray.length;i++){
-			    var emissionTimeFromPlaylist = adBreakArray[i].getAttribute("timeOffset");
-			    var emisionTime = new Date(emissionTimeFromPlaylist);
-			    var now = new Date();
+  for(var i=0; i<adBreakArray.length;i++){
+    emissionTime = adBreakArray[i].getAttribute("timeOffset");
+    var emisionTime = new Date(emissionTime);
+    var now = new Date();
 
-			    if (emisionTime <= now){
-			      adBreak = new Object();
-			      breakId = adBreakArray[i].getAttribute("breakId");
-			      adBreak.breakId = breakId;
-			      adBreak.emisionTime = emissionTimeFromPlaylist;
-			      adBreaksWithWrongTime.push(adBreak);
-			      status = 'NOK';
-			    }
-			  }
+    if (emisionTime <= now){
+      adBreak = new Object();
+      breakId = adBreakArray[i].getAttribute("breakId");
+      adBreak.breakId = breakId;
+      adBreak.emisionTime = adBreakArray[i].getAttribute("timeOffset");
+      adBreaksWithWrongTime.push(adBreak);
+      status = 'NOK';
+    }
+  }
 
-			  testCaseResult = new Object()
-			  testCaseResult.id = 'T4_checkIfTimeOfAdBreaksIsInTheFuture';
-			  testCaseResult.status = status;
+  testCaseResult = new Object()
+  testCaseResult.id = 'T4_checkIfTimeOfAdBreaksIsInTheFuture';
+  testCaseResult.status = status;
 
-			  if(status == 'NOK'){
-			    additionalParams = new Object();
-			    additionalParams.adBreaksWithWrongTime = adBreaksWithWrongTime;
-			    testCaseResult.additionalParams = additionalParams;
-			  }
+  if(status == 'NOK'){
+    additionalParams = new Object();
+    additionalParams.adBreaksWithWrongTime = adBreaksWithWrongTime;
+    testCaseResult.additionalParams = additionalParams;
+  }
 
-			  return testCaseResult;
-			}
+  return testCaseResult;
+}
 
-			function getURL(url){
-			    var start = (new Date()).getTime();
-			    var xhr = new XMLHttpRequest();
-			    xhr.open( "GET", url, false );
-			    xhr.send();
-			    var end = (new Date()).getTime();
+function getURL(url){
+    var start = (new Date()).getTime();
+    var xhr = new XMLHttpRequest();
+    xhr.open( "GET", url, false );
+    xhr.send();
+    var end = (new Date()).getTime();
 
-			    var parser = new DOMParser();
-			    var response = parser.parseFromString(xhr.responseText,"text/xml");
+    var parser = new DOMParser();
+    var response = parser.parseFromString(xhr.responseText,"text/xml");
 
-			    return [xhr.status,end-start,response];
-			}
+    return [xhr.status,end-start,response];
+}
 
-			function postURL(url, body){
-			  var xhr = new XMLHttpRequest();
-			  xhr.open("POST", url,true);
-			  //xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-			  xhr.send(body);  
-			  return [xhr.status];
-			}
+function postURL(url, body){
+  var xhr = new XMLHttpRequest();
+  xhr.open("POST", url,true);
+  //xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+  xhr.send(body);  
+  return [xhr.status];
+}
 
-			function checkURL(url){ 
-			    var xmlHttp = new XMLHttpRequest();
-			    xmlHttp.open('HEAD', url, false);
-			    xmlHttp.send();
-			    return xmlHttp.status!=404;
-			}
+function checkURL(url){ 
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.open('HEAD', url, false);
+    xmlHttp.send();
+    return xmlHttp.status!=404;
+}
 
-			function createReport(initialParams,testCasesResults){
-			  var report = new Object();
+function createReport(initialParams,testCasesResults){
+  var report = new Object();
 
-			  report.time = (new Date()).getTime();
-			  report.status = 'OK';
-			  report.id = Math.random().toString(36).substr(2, 5);
-			  report.initialParams = initialParams;
-			  report.testCases = [];
+  report.time = (new Date()).getTime();
+  report.status = 'OK';
+  report.id = Math.random().toString(36).substr(2, 5);
+  report.initialParams = initialParams;
+  report.testCases = [];
 
-			  var testCasesResultsLenght = testCasesResults.length;
-			  for (var i = 0; i < testCasesResultsLenght; i++) {
-			    delete testCasesResults[i].others;
-			    report.testCases.push(testCasesResults[i]);
-			    if(testCasesResults[i].status == 'NOK'){
-			      report.status = 'NOK'; 
-			    }
-			  }
+  var testCasesResultsLenght = testCasesResults.length;
+  for (var i = 0; i < testCasesResultsLenght; i++) {
+    delete testCasesResults[i].others;
+    report.testCases.push(testCasesResults[i]);
+    if(testCasesResults[i].status == 'NOK'){
+      report.status = 'NOK'; 
+    }
+  }
 
-			  return report;
-			}
+  return report;
+}
 
-			function sendReport(initialParams,report){
-			  var text = JSON.stringify(report);
-			  var url = initialParams.logURL+encodeURIComponent(text);
-			  //getURL(url);
+function sendReport(initialParams,report){
+  var text = JSON.stringify(report);
+  var url = initialParams.logURL+encodeURIComponent(text);
+  //getURL(url);
 
-			   log(report);
+   log(report);
 
-			  if (report.status == 'NOK'){
-			    alarm(report);
-			  }
-			}
+  if (report.status == 'NOK'){
+    alarm(report);
+  }
+}
 
-			function log(report){
-			  googleSheetLog = new Object();
-			  googleSheetLog.time = report.time;
-			  googleSheetLog.id = report.id;
-			  googleSheetLog.status = report.status;
-			  googleSheetLog.log = JSON.stringify(report);
+function log(report){
+  googleSheetLog = new Object();
+  googleSheetLog.time = report.time;
+  googleSheetLog.id = report.id;
+  googleSheetLog.status = report.status;
+  googleSheetLog.log = JSON.stringify(report);
 
-			  postURL("https://script.google.com/macros/s/AKfycbwTw1mvAttpLwdZmdKFYwx8Cp1g7fBkEDjhx0h3BxQGHjgn5wo/exec",JSON.stringify(googleSheetLog));
+  postURL("https://script.google.com/macros/s/AKfycbwTw1mvAttpLwdZmdKFYwx8Cp1g7fBkEDjhx0h3BxQGHjgn5wo/exec",JSON.stringify(googleSheetLog));
 
-			  //console.log(JSON.stringify(googleSheetLog));
-			  //sleep(2000);
-			}
+  //console.log(JSON.stringify(googleSheetLog));
+  //sleep(2000);
+}
 
-			function alarm(report){
-			  //var message = "{\"text\": \"Dupa\"}";
-			  //postURL("https://outlook.office.com/webhook/227686e3-f2a8-47ce-92db-13a43c2aabc3@092a1ba4-a4fe-4172-970e-7ab3035e7c94/IncomingWebhook/69a3c0b439944bb39b62df46ddff8007/b1885d58-2ecd-464a-95ee-c980adf3dbca",message);
-			}
-
-			function sleep(milliseconds) {
-			  const date = Date.now();
-			  let currentDate = null;
-			  do {
-			    currentDate = Date.now();
-			  } while (currentDate - date < milliseconds);
-			}
+function alarm(report){
+  //var message = "{\"text\": \"Dupa\"}";
+  //postURL("https://outlook.office.com/webhook/227686e3-f2a8-47ce-92db-13a43c2aabc3@092a1ba4-a4fe-4172-970e-7ab3035e7c94/IncomingWebhook/69a3c0b439944bb39b62df46ddff8007/b1885d58-2ecd-464a-95ee-c980adf3dbca",message);
+}
 		</script>
 </head>
 
