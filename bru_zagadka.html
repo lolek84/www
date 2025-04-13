@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <title>Strona zabezpieczona</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 100px;
+    }
+    #content {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h2>Cześć Brunio! Wprowadź hasło, aby uzyskać dostęp. Hasło to 34+66=? </h2>
+  <input type="password" id="passwordInput" placeholder="Hasło">
+  <button onclick="checkPassword()">Zaloguj</button>
+
+  <div id="content">
+    <h1>Gratulacje!</h1>
+    <p>Wejdź na stronę https://www.minecraft.net/pl-pl/redeem i podaj kod 3F9Q2-JKVP6-4X3TC-7K6M3-PQVHZ (przepisz go na kartkę), a dostaniesz 1720 minecoinów. Miłego grania!</p>
+  </div>
+
+  <script>
+    const correctPassword = "100"; // Zmień na własne hasło
+
+    function checkPassword() {
+      const input = document.getElementById("passwordInput").value;
+      if (input === correctPassword) {
+        document.getElementById("content").style.display = "block";
+        document.querySelector("h2").style.display = "none";
+        document.getElementById("passwordInput").style.display = "none";
+        event.target.style.display = "none";
+      } else {
+        alert("Nieprawidłowe hasło!");
+      }
+    }
+  </script>
+</body>
+</html>
