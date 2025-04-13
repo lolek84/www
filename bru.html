@@ -15,17 +15,18 @@
   </style>
 </head>
 <body>
-  <h2>Wprowadź hasło, aby uzyskać dostęp</h2>
+  <h2>Cześć Brunio! Wprowadź hasło, aby uzyskać dostęp. </h2>
+  <h1>Hasło to 34+66=?</h1>
   <input type="password" id="passwordInput" placeholder="Hasło">
   <button onclick="checkPassword()">Zaloguj</button>
 
   <div id="content">
-    <h1>Witaj na stronie!</h1>
+    <h1>Gratulacje!</h1>
     <p>To jest chroniona zawartość strony.</p>
   </div>
 
   <script>
-    const correctPassword = "tajnehaslo"; // Zmień na własne hasło
+    const correctPassword = "100"; // Zmień na własne hasło
 
     function checkPassword() {
       const input = document.getElementById("passwordInput").value;
